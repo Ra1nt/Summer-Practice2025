@@ -1,29 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './LoginPage.css'; // 需要新建 CSS 文件
 
 const LoginPage = () => {
-  const [isRegister, setIsRegister] = useState(false); // 切换登录/注册
+  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // 新增确认密码
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // 登录逻辑
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-
     try {
       const response = await fetch(
         `/api/admin/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&authority=0`,
         { method: 'POST' }
       );
-
       if (!response.ok) throw new Error('Login request failed');
-
       const result = await response.json();
-
       if (result.code === 200) {
         localStorage.setItem('isAuthenticated', 'true');
         navigate('/dashboard');
@@ -35,30 +31,23 @@ const LoginPage = () => {
     }
   };
 
-  // 注册逻辑
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
-
-    // 检查两次密码是否一致
     if (password !== confirmPassword) {
       setError('两次输入的密码不一致');
       return;
     }
-
     try {
       const response = await fetch(
         `/api/admin/register?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
         { method: 'GET' }
       );
-
       if (!response.ok) throw new Error('Register request failed');
-
       const result = await response.json();
-
       if (result.code === 200) {
         alert('注册成功，请登录');
-        setIsRegister(false); // 注册成功后跳回登录页面
+        setIsRegister(false);
         setPassword('');
         setConfirmPassword('');
       } else {
@@ -70,66 +59,71 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form">
-        <h2>DC管理系统</h2>
-        <form onSubmit={isRegister ? handleRegister : handleLogin}>
-          <div className="form-group">
-            <label>用户名:</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
+    <div className="login-page">
+      <div className="login-left">
+        <div className="brand">
+          <h1>DC管理系统</h1>
+          <p>企业级客户管理平台</p>
+        </div>
+      </div>
 
-          <div className="form-group">
-            <label>密码:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {isRegister && (
+      <div className="login-right">
+        <div className="login-card">
+          <h2>{isRegister ? '注册账号' : '登录账号'}</h2>
+          <form onSubmit={isRegister ? handleRegister : handleLogin}>
             <div className="form-group">
-              <label>确认密码:</label>
               <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                type="text"
+                placeholder="用户名"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
-          )}
+            <div className="form-group">
+              <input
+                type="password"
+                placeholder="密码"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            {isRegister && (
+              <div className="form-group">
+                <input
+                  type="password"
+                  placeholder="确认密码"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            {error && <p className="error">{error}</p>}
+            <button type="submit" className="btn-primary">
+              {isRegister ? '注册' : '登录'}
+            </button>
+          </form>
 
-          {error && <p className="error">{error}</p>}
-
-          <button type="submit" className="btn">
-            {isRegister ? '注册' : '登录'}
-          </button>
-        </form>
-
-        <p style={{ marginTop: '10px' }}>
-          {isRegister ? (
-            <>
-              已有账号？{' '}
-              <button onClick={() => setIsRegister(false)} className="link-btn">
-                去登录
-              </button>
-            </>
-          ) : (
-            <>
-              还没有账号？{' '}
-              <button onClick={() => setIsRegister(true)} className="link-btn">
-                去注册
-              </button>
-            </>
-          )}
-        </p>
+          <div className="switch">
+            {isRegister ? (
+              <span>
+                已有账号？{' '}
+                <button className="link-btn" onClick={() => setIsRegister(false)}>
+                  去登录
+                </button>
+              </span>
+            ) : (
+              <span>
+                还没有账号？{' '}
+                <button className="link-btn" onClick={() => setIsRegister(true)}>
+                  去注册
+                </button>
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

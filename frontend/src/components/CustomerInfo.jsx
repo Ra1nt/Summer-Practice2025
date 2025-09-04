@@ -7,26 +7,50 @@ const CustomerInfo = () => {
   const [error, setError] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
+  // 搜索关键字
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [queryKeyword, setQueryKeyword] = useState('');
+
+  // 分页
+  const [pageNum, setPageNum] = useState(1);
+  const [pageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+
   const fetchCustomers = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const response = await fetch('/api/customer/getCustomerInfo?pageNum=1&pageSize=10');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const result = await response.json();
-      if (result.code === 200) {
-        setCustomers(result.data.list.map(item => item.customer) || []);
+      let url;
+      if (queryKeyword) {
+        // 搜索接口，后端已支持分页
+        url = `/api/customer/searchByName?name=${encodeURIComponent(queryKeyword)}&fuzzy=true&pageNum=${pageNum}&pageSize=${pageSize}`;
       } else {
-        throw new Error(result.msg || 'Failed to fetch data');
+        // 获取全部客户
+        url = `/api/customer/getAllCustomers?pageNum=${pageNum}&pageSize=${pageSize}`;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('网络请求失败');
+
+      const result = await response.json();
+      console.log("请求地址:", url);
+      console.log("返回数据:", result);
+
+      if (result.code === 200) {
+        // 后端返回 PageInfo 结构
+        const data = result.data;
+        setCustomers(data.list || []);
+        setTotal(data.total || 0);
+      } else {
+        throw new Error(result.msg || '获取数据失败');
       }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [queryKeyword, pageNum, pageSize]);
 
   useEffect(() => {
     fetchCustomers();
@@ -34,8 +58,24 @@ const CustomerInfo = () => {
 
   const handleCustomerAdded = () => {
     setShowAddForm(false);
-    fetchCustomers(); // Refresh the customer list
+    setPageNum(1);
+    setSearchKeyword('');
+    setQueryKeyword('');
+    fetchCustomers();
   };
+
+  const handleSearch = () => {
+    setPageNum(1);
+    setQueryKeyword(searchKeyword.trim());
+  };
+
+  const handleReset = () => {
+    setSearchKeyword('');
+    setQueryKeyword('');
+    setPageNum(1);
+  };
+
+  const totalPages = Math.ceil(total / pageSize);
 
   if (loading) return <p className="loading">加载中...</p>;
   if (error) return <p className="error">{error}</p>;
@@ -48,12 +88,25 @@ const CustomerInfo = () => {
       </div>
 
       {showAddForm && (
-        <AddCustomerForm 
-          onCustomerAdded={handleCustomerAdded} 
-          onCancel={() => setShowAddForm(false)} 
+        <AddCustomerForm
+          onCustomerAdded={handleCustomerAdded}
+          onCancel={() => setShowAddForm(false)}
         />
       )}
 
+      {/* 搜索框 */}
+      <div style={{ margin: "10px 0" }}>
+        <input
+          type="text"
+          placeholder="请输入客户名称"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+        />
+        <button onClick={handleSearch} style={{ marginLeft: "5px" }}>搜索</button>
+        <button onClick={handleReset} style={{ marginLeft: "5px" }}>重置</button>
+      </div>
+
+      {/* 客户表格 */}
       <table>
         <thead>
           <tr>
@@ -80,6 +133,25 @@ const CustomerInfo = () => {
           ))}
         </tbody>
       </table>
+
+      {/* 分页 */}
+      <div style={{ marginTop: "10px" }}>
+        <button
+          onClick={() => setPageNum(p => Math.max(1, p - 1))}
+          disabled={pageNum === 1}
+        >
+          上一页
+        </button>
+        <span style={{ margin: "0 10px" }}>
+          第 {pageNum} 页 / 共 {totalPages} 页
+        </span>
+        <button
+          onClick={() => setPageNum(p => Math.min(totalPages, p + 1))}
+          disabled={pageNum >= totalPages || totalPages === 0}
+        >
+          下一页
+        </button>
+      </div>
     </div>
   );
 };
