@@ -25,7 +25,7 @@ public class StatisticsController {
     public Response listByIndustryYear(@RequestParam(required = false) String industry,
                                        @RequestParam Integer year,
                                        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
-                                       @RequestParam(required = false, defaultValue = "20") Integer pageSize) {
+                                       @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
         try {
             PageHelper.startPage(pageNum, pageSize);
             List<ViolateRecordDTO> list = statisticsService.listByIndustryYear(industry, year);

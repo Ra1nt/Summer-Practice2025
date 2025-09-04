@@ -9,6 +9,7 @@ import com.example.dcmanagesystem.uitls.JWTUtils;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,19 +24,18 @@ public class CustomerController {
     CustomerService customerService;
 
 
-    @RequestMapping("/getAllCustomers")
-    public Response getAllCustomer() {
+    @GetMapping("/getAllCustomers")
+    public Response getAllCustomer(@RequestParam(defaultValue = "1") Integer pageNum,
+                                   @RequestParam(defaultValue = "10") Integer pageSize) {
         try {
-
+            PageHelper.startPage(pageNum, pageSize);
             List<Customer> customers = customerService.queryAllCustomers();
-            if (customers != null) {
-                return new Response(200, "success", customers);
-            }
-            return new Response(512, "未知错误");
+            return new Response(200, "success", new com.github.pagehelper.PageInfo<>(customers));
         } catch (Exception e) {
             return new Response(502, "错误:" + e);
         }
     }
+
 
     @RequestMapping("getViolateCustomerInfo")
     public Response getCustomerInfo(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
@@ -76,7 +76,7 @@ public class CustomerController {
             return new Response(502, "错误：" + e);
         }
     }
-    @RequestMapping("/searchByName")
+/*    @RequestMapping("/searchByName")
     public Response searchByName(@RequestParam String name,
                                  @RequestParam(required = false, defaultValue = "true") Boolean fuzzy,
                                  @RequestParam(required = false) Integer pageNum,
@@ -97,7 +97,26 @@ public class CustomerController {
         } catch (Exception e) {
             return new Response(502, "错误:" + e);
         }
+    }*/
+
+    @GetMapping("/searchByName")
+    public Response searchByName(@RequestParam String name,
+                                 @RequestParam(required = false, defaultValue = "true") Boolean fuzzy,
+                                 @RequestParam(defaultValue = "1") Integer pageNum,
+                                 @RequestParam(defaultValue = "10") Integer pageSize) {
+        try {
+            if (name == null || name.trim().isEmpty()) {
+                return Response.invalidParamResp("customer_name");
+            }
+            PageHelper.startPage(pageNum, pageSize);
+            boolean useFuzzy = Boolean.TRUE.equals(fuzzy); // 默认 true，可显式传 false
+            List<Customer> list = customerService.searchByName(name.trim(), useFuzzy);
+            return new Response(200, "success", new com.github.pagehelper.PageInfo<>(list));
+        } catch (Exception e) {
+            return new Response(502, "错误:" + e.getMessage());
+        }
     }
+
 
 
 }
