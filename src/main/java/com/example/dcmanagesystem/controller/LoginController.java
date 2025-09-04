@@ -58,21 +58,21 @@ public class LoginController {
         return new Response(501, "未知错误");
     }
     @RequestMapping("/register")
-public Response register(@RequestParam String username, @RequestParam String password, @RequestParam Integer authority) {
-    // 检查用户名是否已存在
-    Admin existingAdmin = adminService.queryAdminByUsername(username);
-    if (existingAdmin != null) {
-        return new Response(400, "用户名已存在");
-    }
+    public Response register(@RequestParam String username, @RequestParam String password, @RequestParam (defaultValue = "0") Integer authority) {
+        // 检查用户名是否已存在
+        Admin existingAdmin = adminService.queryAdminByUsername(username);
+        if (existingAdmin != null) {
+            return new Response(400, "用户名已存在");
+        }
 
-    // 创建新管理员
-    Admin newAdmin = new Admin(username, password, authority);
-    boolean result = adminService.insertAdmin(newAdmin);
+        // 创建新管理员
+     Admin newAdmin = new Admin(username, password, authority);
+        boolean result = adminService.insertAdmin(newAdmin);
 
-    if (result) {
-        return new Response(200, "注册成功");
-    } else {
-        return new Response(500, "注册失败");
+        if (result) {
+            return new Response(200, "注册成功");
+        } else {
+            return new Response(500, "注册失败");
+        }
     }
-}
 }

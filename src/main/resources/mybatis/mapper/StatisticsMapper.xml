@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dcmanagesystem.mapper.StatisticsMapper">
+
+    <!-- 列表：按行业+年份拉所有记录 -->
+    <select id="selectViolateRecordsByIndustryYear"
+            parameterType="map"
+            resultType="com.example.dcmanagesystem.dto.ViolateRecordDTO">
+
+        SELECT
+        va.id_             AS violateId,
+        c.id_              AS customerId,
+        c.customer_name    AS customerName,
+        c.industry         AS industry,
+        c.area             AS area,
+        va.violate_level   AS violateLevel,
+        va.violate_reason  AS violateReason,
+        va.status          AS status,
+        va.apply_date      AS applyDate,
+        rc.certificate_date   AS recoverCertificateDate,
+        rc.certificate_person AS recoverCertificatePerson
+        FROM violate_apply va
+        JOIN customer c ON c.id_ = va.customer_id
+        LEFT JOIN recover_check rc ON rc.violate_id = va.id_
+        WHERE 1=1
+        <if test="industry != null and industry != ''">
+            AND c.industry = #{industry}
+        </if>
+        <if test="year != null">
+            AND YEAR(STR_TO_DATE(va.apply_date,'%Y-%m-%d %H:%i:%s')) = #{year}
+            <!-- 如果 apply_date 是 DATETIME，改成：AND YEAR(va.apply_date) = #{year} -->
+        </if>
+        ORDER BY va.apply_date DESC
+    </select>
+
+    <!-- 聚合：按行业 + 年份 -->
+    <select id="selectIndustryYearAgg"
+            parameterType="map"
+            resultType="com.example.dcmanagesystem.dto.IndustryYearAggDTO">
+        SELECT
+        c.industry                                         AS industry,
+        #{year}                                            AS year,
+        COUNT(DISTINCT va.customer_id)                     AS violateSubjects,
+        COUNT(DISTINCT CASE
+        WHEN rc.certificate_date IS NOT NULL
+        AND YEAR(STR_TO_DATE(rc.certificate_date,'%Y-%m-%d %H:%i:%s')) = #{year}
+        THEN va.customer_id END)                       AS recoverSubjects,
+        COUNT(*)                                           AS totalRecords
+        FROM violate_apply va
+        JOIN customer c ON c.id_ = va.customer_id
+        LEFT JOIN recover_check rc ON rc.violate_id = va.id_
+        WHERE 1=1
+        <if test="year != null">
+            AND YEAR(STR_TO_DATE(va.apply_date,'%Y-%m-%d %H:%i:%s')) = #{year}
+            <!-- 如果 apply_date 是 DATETIME，改成：AND YEAR(va.apply_date) = #{year} -->
+        </if>
+        <if test="industry != null and industry != ''">
+            AND c.industry = #{industry}
+        </if>
+        GROUP BY c.industry
+        ORDER BY totalRecords DESC
+    </select>
+
+</mapper>
