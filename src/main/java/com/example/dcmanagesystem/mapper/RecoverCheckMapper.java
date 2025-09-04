@@ -16,4 +16,5 @@ public interface RecoverCheckMapper {
     RecoverCheck queryRecoverCheckById(Integer violate_id);
     void updateRecoverCheck(RecoverCheck recoverCheck);
     void deleteRecoverCheckById(Integer violate_id);
+
 }
