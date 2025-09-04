@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
 
 @Mapper
 @Repository
@@ -18,4 +20,7 @@ public interface CustomerMapper {
     List<Customer> queryCustomerByLevel(Integer outside_level);
     void updateCustomer(Customer customer);
     void deleteCustomerById(Integer id_);
+    List<Customer> searchByName(@Param("name") String name,
+                                @Param("fuzzy") boolean fuzzy);
+
 }

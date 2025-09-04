@@ -54,4 +54,9 @@ public class CustomerService {
         String s = "violateCustomerInfo";
         return new MyPageInfo<>(customerPageInfo, violateApplyService, s);
     }
+
+    public List<Customer> searchByName(String name, boolean fuzzy) {
+        return customerMapper.searchByName(name, fuzzy);
+    }
+
 }
