@@ -23,10 +23,8 @@ const CustomerInfo = () => {
     try {
       let url;
       if (queryKeyword) {
-        // 搜索接口，后端已支持分页
         url = `/api/customer/searchByName?name=${encodeURIComponent(queryKeyword)}&fuzzy=true&pageNum=${pageNum}&pageSize=${pageSize}`;
       } else {
-        // 获取全部客户
         url = `/api/customer/getAllCustomers?pageNum=${pageNum}&pageSize=${pageSize}`;
       }
 
@@ -38,7 +36,6 @@ const CustomerInfo = () => {
       console.log("返回数据:", result);
 
       if (result.code === 200) {
-        // 后端返回 PageInfo 结构
         const data = result.data;
         setCustomers(data.list || []);
         setTotal(data.total || 0);
@@ -82,9 +79,22 @@ const CustomerInfo = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3>客户信息</h3>
-        <button onClick={() => setShowAddForm(true)} className="btn">添加新客户</button>
+      {/* 标题和按钮同一行，按钮与标题间隔适中 */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        marginBottom: '15px',
+        gap: '20px' // 设置标题和按钮的间距
+      }}>
+        <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>客户信息</h3>
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="btn"
+          style={{ padding: '5px 15px' }}
+        >
+          添加新客户
+        </button>
       </div>
 
       {showAddForm && (

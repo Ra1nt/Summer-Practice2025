@@ -1,11 +1,3 @@
-/*
- * @Author: rain l0802_69@qq.com
- * @Date: 2025-09-03 14:30:32
- * @LastEditors: rain l0802_69@qq.com
- * @LastEditTime: 2025-09-04 10:31:41
- * @FilePath: /Summer-Practice2025/frontend/src/components/AddCustomerForm.jsx
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 import React, { useState } from 'react';
 
 const AddCustomerForm = ({ onCustomerAdded, onCancel }) => {
@@ -28,13 +20,12 @@ const AddCustomerForm = ({ onCustomerAdded, onCancel }) => {
     }
 
     try {
-      const response = await fetch(`/api/customer/insertCustomer?customerName=${encodeURIComponent(customerName)}&area=${encodeURIComponent(area)}&industry=${encodeURIComponent(industry)}&outsideLevel=${encodeURIComponent(outsideLevel)}`, {
-        method: 'POST',
-      });
+      const response = await fetch(
+        `/api/customer/insertCustomer?customerName=${encodeURIComponent(customerName)}&area=${encodeURIComponent(area)}&industry=${encodeURIComponent(industry)}&outsideLevel=${encodeURIComponent(outsideLevel)}`,
+        { method: 'POST' }
+      );
 
-      if (!response.ok) {
-        throw new Error('Failed to add customer');
-      }
+      if (!response.ok) throw new Error('Failed to add customer');
 
       const result = await response.json();
 
@@ -51,27 +42,30 @@ const AddCustomerForm = ({ onCustomerAdded, onCancel }) => {
   };
 
   return (
-    <div className="add-customer-form">
+    <div className="add-customer-form" style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
       <h4>添加新客户</h4>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>客户名称:</label>
-          <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} required />
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div className="form-group" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <label style={{ width: '80px' }}>客户名称:</label>
+          <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} required style={{ flex: 1 }} />
         </div>
-        <div className="form-group">
-          <label>地区:</label>
-          <input type="text" value={area} onChange={(e) => setArea(e.target.value)} required />
+        <div className="form-group" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <label style={{ width: '80px' }}>地区:</label>
+          <input type="text" value={area} onChange={(e) => setArea(e.target.value)} required style={{ flex: 1 }} />
         </div>
-        <div className="form-group">
-          <label>行业:</label>
-          <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)} required />
+        <div className="form-group" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <label style={{ width: '80px' }}>行业:</label>
+          <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)} required style={{ flex: 1 }} />
         </div>
-        <div className="form-group">
-          <label>外部等级:</label>
-          <input type="number" value={outsideLevel} onChange={(e) => setOutsideLevel(e.target.value)} required />
+        <div className="form-group" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <label style={{ width: '80px' }}>外部等级:</label>
+          <input type="number" value={outsideLevel} onChange={(e) => setOutsideLevel(e.target.value)} required style={{ flex: 1 }} />
         </div>
-        {error && <p className="error">{error}</p>}
-        <div className="form-actions">
+
+        {error && <p className="error" style={{ color: 'red' }}>{error}</p>}
+
+        {/* 按钮同一行 */}
+        <div className="form-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-start' }}>
           <button type="submit" className="btn" disabled={submitting}>
             {submitting ? 'Submitting...' : 'Submit'}
           </button>
@@ -85,4 +79,3 @@ const AddCustomerForm = ({ onCustomerAdded, onCancel }) => {
 };
 
 export default AddCustomerForm;
- 

@@ -12,13 +12,11 @@ const ViolateApply = () => {
     setError(null);
     try {
       const response = await fetch('/api/violateApply/getViolateInfo?pageNum=1&pageSize=10');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      if (!response.ok) throw new Error('Network response was not ok');
       const result = await response.json();
       if (result.code === 200 && result.data) {
         setViolateInfo(result.data.list || []);
-      } else if (result.code !== 200) {
+      } else {
         throw new Error(result.msg || 'Failed to fetch data');
       }
     } catch (err) {
@@ -42,63 +40,12 @@ const ViolateApply = () => {
     try {
       const response = await fetch('/api/violateApply/pass', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: id, username: 'test_user' }), // Assuming 'test_user' for now
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, username: 'test_user' }),
       });
       const result = await response.json();
-      if (result.code === 200) {
-        fetchViolateInfo();
-      } else {
-        alert('Operation failed: ' + result.msg);
-      }
-    } catch (error) {
-      alert('An error occurred: ' + error.message);
-    } finally {
-      setProcessing(null);
-    }
-  };
-
-  const handleRecoverPass = async (violateId) => {
-    setProcessing(violateId);
-    try {
-      const response = await fetch('/api/recoverApply/pass', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ violateId: violateId, username: 'test_user' }),
-      });
-      const result = await response.json();
-      if (result.code === 200) {
-        fetchViolateInfo();
-      } else {
-        alert('操作失败: ' + result.msg);
-      }
-    } catch (error) {
-      alert('发生错误: ' + error.message);
-    } finally {
-      setProcessing(null);
-    }
-  };
-
-  const handleRecoverRefuse = async (violateId) => {
-    setProcessing(violateId);
-    try {
-      const response = await fetch('/api/recoverApply/refuse', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ violateId: violateId, username: 'test_user' }),
-      });
-      const result = await response.json();
-      if (result.code === 200) {
-        fetchViolateInfo();
-      } else {
-        alert('操作失败: ' + result.msg);
-      }
+      if (result.code === 200) fetchViolateInfo();
+      else alert('操作失败: ' + result.msg);
     } catch (error) {
       alert('发生错误: ' + error.message);
     } finally {
@@ -111,19 +58,50 @@ const ViolateApply = () => {
     try {
       const response = await fetch('/api/violateApply/refuse', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: id, username: 'test_user' }), // Assuming 'test_user' for now
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, username: 'test_user' }),
       });
       const result = await response.json();
-      if (result.code === 200) {
-        fetchViolateInfo();
-      } else {
-        alert('Operation failed: ' + result.msg);
-      }
+      if (result.code === 200) fetchViolateInfo();
+      else alert('操作失败: ' + result.msg);
     } catch (error) {
-      alert('An error occurred: ' + error.message);
+      alert('发生错误: ' + error.message);
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const handleRecoverPass = async (violateId) => {
+    setProcessing(violateId);
+    try {
+      const response = await fetch('/api/recoverApply/pass', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ violateId, username: 'test_user' }),
+      });
+      const result = await response.json();
+      if (result.code === 200) fetchViolateInfo();
+      else alert('操作失败: ' + result.msg);
+    } catch (error) {
+      alert('发生错误: ' + error.message);
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const handleRecoverRefuse = async (violateId) => {
+    setProcessing(violateId);
+    try {
+      const response = await fetch('/api/recoverApply/refuse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ violateId, username: 'test_user' }),
+      });
+      const result = await response.json();
+      if (result.code === 200) fetchViolateInfo();
+      else alert('操作失败: ' + result.msg);
+    } catch (error) {
+      alert('发生错误: ' + error.message);
     } finally {
       setProcessing(null);
     }
@@ -142,9 +120,12 @@ const ViolateApply = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3>违规申请信息</h3>
-        <button onClick={() => setShowAddForm(true)} className="btn">新增违规申请</button>
+      {/* 标题和按钮同一行 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '10px' }}>
+        <h3 style={{ margin: 0 }}>违规申请信息</h3>
+        <button onClick={() => setShowAddForm(true)} className="btn">
+          新增违规申请
+        </button>
       </div>
 
       {showAddForm && (
@@ -180,14 +161,14 @@ const ViolateApply = () => {
               <td>
                 {info.violate_status === 1 && (
                   <>
-                    <button 
-                      onClick={() => handlePass(info.violate_id)} 
+                    <button
+                      onClick={() => handlePass(info.violate_id)}
                       disabled={processing === info.violate_id}
                     >
                       {processing === info.violate_id ? '处理中...' : '通过'}
                     </button>
-                    <button 
-                      onClick={() => handleRefuse(info.violate_id)} 
+                    <button
+                      onClick={() => handleRefuse(info.violate_id)}
                       disabled={processing === info.violate_id}
                       style={{ marginLeft: '5px' }}
                     >
@@ -197,14 +178,14 @@ const ViolateApply = () => {
                 )}
                 {info.violate_status === 3 && (
                   <>
-                    <button 
-                      onClick={() => handleRecoverPass(info.violate_id)} 
+                    <button
+                      onClick={() => handleRecoverPass(info.violate_id)}
                       disabled={processing === info.violate_id}
                     >
                       {processing === info.violate_id ? '处理中...' : '通过恢复'}
                     </button>
-                    <button 
-                      onClick={() => handleRecoverRefuse(info.violate_id)} 
+                    <button
+                      onClick={() => handleRecoverRefuse(info.violate_id)}
                       disabled={processing === info.violate_id}
                       style={{ marginLeft: '5px' }}
                     >
@@ -225,56 +206,97 @@ const AddViolateApplyForm = ({ onApplyAdded, onCancel }) => {
   const [customerId, setCustomerId] = useState('');
   const [violateReason, setViolateReason] = useState('');
   const [remark, setRemark] = useState('');
-  const [username, setUsername] = useState('test_user'); // This should be dynamic in a real app
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSubmitting(true);
+
+    if (!customerId || !violateReason) {
+      setError('客户ID和违规原因为必填项');
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/violateApply/insertApply', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerId: parseInt(customerId),
           violateReason,
           remark,
-          username,
+          username: 'test_user',
         }),
       });
       const result = await response.json();
-      if (result.code === 200) {
-        onApplyAdded();
-      } else {
-        alert('Failed to add application: ' + result.msg);
-      }
-    } catch (error) {
-      alert('An error occurred: ' + error.message);
+      if (result.code === 200) onApplyAdded();
+      else setError(result.msg || '未知错误');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div className="add-form" style={{ padding: '20px', border: '1px solid #ccc', margin: '20px 0' }}>
+    <div
+      style={{
+        padding: '10px',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        margin: '20px 0',
+      }}
+    >
       <h4>新增违规申请</h4>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label>客户ID: </label>
-          <input type="number" value={customerId} onChange={e => setCustomerId(e.target.value)} required />
+      <form style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} onSubmit={handleSubmit}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <label style={{ width: '100px' }}>客户ID:</label>
+          <input
+            type="number"
+            value={customerId}
+            onChange={e => setCustomerId(e.target.value)}
+            required
+            style={{ flex: 1, padding: '5px' }}
+          />
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>违规原因 (逗号分隔): </label>
-          <input type="text" value={violateReason} onChange={e => setViolateReason(e.target.value)} required />
+
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <label style={{ width: '100px' }}>违规原因:</label>
+          <input
+            type="text"
+            value={violateReason}
+            onChange={e => setViolateReason(e.target.value)}
+            required
+            style={{ flex: 1, padding: '5px' }}
+          />
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label>备注: </label>
-          <textarea value={remark} onChange={e => setRemark(e.target.value)} />
+
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <label style={{ width: '100px' }}>备注:</label>
+          <input
+            type="text"
+            value={remark}
+            onChange={e => setRemark(e.target.value)}
+            style={{ flex: 1, padding: '5px' }}
+          />
         </div>
-        <button type="submit" className="btn">提交</button>
-        <button type="button" onClick={onCancel} className="btn" style={{ marginLeft: '10px' }}>取消</button>
+
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button type="submit" className="btn" disabled={submitting}>
+            {submitting ? '提交中...' : '提交'}
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={onCancel}>
+            取消
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
 export default ViolateApply;
-
