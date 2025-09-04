@@ -10,9 +10,9 @@ public class AdminService {
     @Autowired
     AdminMapper adminMapper;
 
-    public void insertAdmin(Admin admin){
+/*    public void insertAdmin(Admin admin){
         adminMapper.insertAdmin(admin);
-    }
+    }*/
     public Admin queryAdminByUsername(String username){
         return adminMapper.queryAdminByUsername(username);
     }
@@ -25,4 +25,7 @@ public class AdminService {
         adminMapper.deleteAdminByUsername(username);
     }
 
+    public boolean insertAdmin(Admin admin) {
+        return adminMapper.insertAdmin(admin) > 0;
+    }
 }

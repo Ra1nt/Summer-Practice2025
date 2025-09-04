@@ -28,4 +28,30 @@
     <select id="queryCustomerByLevel" parameterType="Integer" resultType="com.example.dcmanagesystem.bean.Customer">
         select * from normal.customer where outside_level=#{outside_level}
     </select>
+
+    <select id="searchByName"
+            parameterType="map"
+            resultType="com.example.dcmanagesystem.bean.Customer">
+        SELECT
+        id_,
+        customer_name,
+        area,
+        industry,
+        status,
+        violate_num,
+        recover_num,
+        outside_level
+        FROM customer
+        WHERE
+        <choose>
+            <when test="fuzzy">
+                customer_name LIKE CONCAT('%', #{name}, '%')
+            </when>
+            <otherwise>
+                customer_name = #{name}
+            </otherwise>
+        </choose>
+        ORDER BY id_ DESC
+    </select>
+
 </mapper>

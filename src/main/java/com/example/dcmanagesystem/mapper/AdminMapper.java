@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Component
 public interface AdminMapper {
-    void insertAdmin(Admin admin);
+    int insertAdmin(Admin admin);
     Admin queryAdminByUsername(String username);
     void updateAdminByUsername(Admin admin);
     void deleteAdminByUsername(String username);

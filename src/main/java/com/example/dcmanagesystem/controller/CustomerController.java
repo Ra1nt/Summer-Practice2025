@@ -76,5 +76,28 @@ public class CustomerController {
             return new Response(502, "错误：" + e);
         }
     }
+    @RequestMapping("/searchByName")
+    public Response searchByName(@RequestParam String name,
+                                 @RequestParam(required = false, defaultValue = "true") Boolean fuzzy,
+                                 @RequestParam(required = false) Integer pageNum,
+                                 @RequestParam(required = false) Integer pageSize) {
+        try {
+            if (name == null || name.trim().isEmpty()) {
+                return Response.invalidParamResp("customer_name");
+            }
+            String keyword = name.trim();
+
+            // 可选分页：当同时提供 pageNum 与 pageSize 时启用
+            if (pageNum != null && pageSize != null) {
+                PageHelper.startPage(pageNum, pageSize);
+            }
+
+            List<Customer> list = customerService.searchByName(keyword, fuzzy == null || fuzzy);
+            return new Response(200, "success", list);
+        } catch (Exception e) {
+            return new Response(502, "错误:" + e);
+        }
+    }
+
 
 }
