@@ -11,3 +11,4 @@ public class RecoverApplyVO {
     private Integer violateId;
     private String username;
 }
+
