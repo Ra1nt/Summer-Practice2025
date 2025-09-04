@@ -49,7 +49,7 @@ const LoginPage = () => {
     try {
       const response = await fetch(
         `/api/admin/register?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
-        { method: 'POST' }
+        { method: 'GET' }
       );
 
       if (!response.ok) throw new Error('Register request failed');
