@@ -1,3 +1,11 @@
+/*
+ * @Author: rain l0802_69@qq.com
+ * @Date: 2025-09-03 14:30:32
+ * @LastEditors: rain l0802_69@qq.com
+ * @LastEditTime: 2025-09-05 10:30:20
+ * @FilePath: /Summer-Practice2025/frontend/src/components/AddCustomerForm.jsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import React, { useState } from 'react';
 
 const AddCustomerForm = ({ onCustomerAdded, onCancel }) => {
@@ -42,7 +50,7 @@ const AddCustomerForm = ({ onCustomerAdded, onCancel }) => {
   };
 
   return (
-    <div className="add-customer-form" style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+    <div className="add-customer-form" style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginBottom: '15px' }}>
       <h4>添加新客户</h4>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div className="form-group" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -64,13 +72,12 @@ const AddCustomerForm = ({ onCustomerAdded, onCancel }) => {
 
         {error && <p className="error" style={{ color: 'red' }}>{error}</p>}
 
-        {/* 按钮同一行 */}
-        <div className="form-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-start' }}>
+        <div className="form-actions" style={{ display: 'flex', gap: '10px' }}>
           <button type="submit" className="btn" disabled={submitting}>
-            {submitting ? 'Submitting...' : 'Submit'}
+            {submitting ? 'Submitting...' : '提交'}
           </button>
           <button type="button" className="btn btn-secondary" onClick={onCancel}>
-            Cancel
+            取消
           </button>
         </div>
       </form>

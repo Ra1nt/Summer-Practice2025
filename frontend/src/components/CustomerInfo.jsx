@@ -7,11 +7,8 @@ const CustomerInfo = () => {
   const [error, setError] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // 搜索关键字
   const [searchKeyword, setSearchKeyword] = useState('');
   const [queryKeyword, setQueryKeyword] = useState('');
-
-  // 分页
   const [pageNum, setPageNum] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -19,21 +16,14 @@ const CustomerInfo = () => {
   const fetchCustomers = useCallback(async () => {
     setLoading(true);
     setError(null);
-
     try {
-      let url;
-      if (queryKeyword) {
-        url = `/api/customer/searchByName?name=${encodeURIComponent(queryKeyword)}&fuzzy=true&pageNum=${pageNum}&pageSize=${pageSize}`;
-      } else {
-        url = `/api/customer/getAllCustomers?pageNum=${pageNum}&pageSize=${pageSize}`;
-      }
+      let url = queryKeyword
+        ? `/api/customer/searchByName?name=${encodeURIComponent(queryKeyword)}&fuzzy=true&pageNum=${pageNum}&pageSize=${pageSize}`
+        : `/api/customer/getAllCustomers?pageNum=${pageNum}&pageSize=${pageSize}`;
 
       const response = await fetch(url);
       if (!response.ok) throw new Error('网络请求失败');
-
       const result = await response.json();
-      console.log("请求地址:", url);
-      console.log("返回数据:", result);
 
       if (result.code === 200) {
         const data = result.data;
@@ -79,20 +69,9 @@ const CustomerInfo = () => {
 
   return (
     <div>
-      {/* 标题和按钮同一行，按钮与标题间隔适中 */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-        marginBottom: '15px',
-        gap: '20px' // 设置标题和按钮的间距
-      }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '15px' }}>
         <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>客户信息</h3>
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="btn"
-          style={{ padding: '5px 15px' }}
-        >
+        <button onClick={() => setShowAddForm(true)} className="btn" style={{ padding: '5px 15px' }}>
           添加新客户
         </button>
       </div>
@@ -104,19 +83,17 @@ const CustomerInfo = () => {
         />
       )}
 
-      {/* 搜索框 */}
-      <div style={{ margin: "10px 0" }}>
+      <div style={{ margin: "10px 0", display: 'flex', gap: '5px' }}>
         <input
           type="text"
           placeholder="请输入客户名称"
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
         />
-        <button onClick={handleSearch} style={{ marginLeft: "5px" }}>搜索</button>
-        <button onClick={handleReset} style={{ marginLeft: "5px" }}>重置</button>
+        <button onClick={handleSearch} className="btn" style={{ padding: '5px 15px' }}>搜索</button>
+        <button onClick={handleReset} className="btn btn-secondary" style={{ padding: '5px 15px' }}>重置</button>
       </div>
 
-      {/* 客户表格 */}
       <table>
         <thead>
           <tr>
@@ -144,18 +121,15 @@ const CustomerInfo = () => {
         </tbody>
       </table>
 
-      {/* 分页 */}
-      <div style={{ marginTop: "10px" }}>
-        <button
+      <div style={{ marginTop: "10px", display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <button className="btn btn-secondary" style={{ padding: '5px 15px' }}
           onClick={() => setPageNum(p => Math.max(1, p - 1))}
           disabled={pageNum === 1}
         >
           上一页
         </button>
-        <span style={{ margin: "0 10px" }}>
-          第 {pageNum} 页 / 共 {totalPages} 页
-        </span>
-        <button
+        <span>第 {pageNum} 页 / 共 {totalPages} 页</span>
+        <button className="btn btn-secondary" style={{ padding: '5px 15px' }}
           onClick={() => setPageNum(p => Math.min(totalPages, p + 1))}
           disabled={pageNum >= totalPages || totalPages === 0}
         >
