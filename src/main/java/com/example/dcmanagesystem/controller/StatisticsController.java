@@ -23,7 +23,7 @@ public class StatisticsController {
     /** 列表：按行业 + 年份 */
     @GetMapping("/industry-year/list")
     public Response listByIndustryYear(@RequestParam(required = false) String industry,
-                                       @RequestParam Integer year,
+                                       @RequestParam(required = false) Integer year,
                                        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                        @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
         try {
@@ -38,7 +38,7 @@ public class StatisticsController {
     /** 聚合：按行业 + 年份 */
     @GetMapping("/industry-year/summary")
     public Response aggByIndustryYear(@RequestParam(required = false) String industry,
-                                      @RequestParam Integer year) {
+                                      @RequestParam(required = false) Integer year) {
         try {
             List<IndustryYearAggDTO> list = statisticsService.aggByIndustryYear(industry, year);
             return new Response(200, "success", list);
@@ -49,7 +49,7 @@ public class StatisticsController {
 
     @GetMapping("/area-year/list")
     public Response listByAreaYear(@RequestParam(required = false) String area,
-                                       @RequestParam Integer year,
+                                       @RequestParam(required = false) Integer year,
                                        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
                                        @RequestParam(required = false, defaultValue = "20") Integer pageSize) {
         try {
@@ -61,10 +61,10 @@ public class StatisticsController {
         }
     }
 
-    /** 聚合：按行业 + 年份 */
+    /** 聚合：按地区 + 年份 */
     @GetMapping("/area-year/summary")
     public Response aggByAreaYear(@RequestParam(required = false) String area,
-                                      @RequestParam Integer year) {
+                                      @RequestParam(required = false) Integer year) {
         try {
             List<AreaYearAggDTO> list = statisticsService.aggByAreaYear(area, year);
             return new Response(200, "success", list);
